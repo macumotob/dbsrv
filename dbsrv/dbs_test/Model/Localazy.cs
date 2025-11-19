@@ -1,10 +1,30 @@
-﻿namespace dbs_test.Model
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+namespace dbs_test.Model
 {
-    public class Localazy
-    {
-        public string Id { get; set; }
-        public string Key { get; set; }
-        public string Translation { get; set; }
-        public string Language { get; set; }
+   
+        [Table("localazy")]
+        public class Localazy
+        {
+            [Key]
+            [Column("id")]
+            [Required]
+            [StringLength(36)]
+            public string Id { get; set; }
+
+            [Column("language")]
+            [Required]
+            [StringLength(10)]
+            public string Language { get; set; }
+
+            [Column("key_id")]
+            [Required]
+            [StringLength(36)]
+            public string KeyId { get; set; }
+
+            [Column("translation")]
+            [Required]
+            [StringLength(1000)]
+            public string Translation { get; set; }
+        }
     }
-}
