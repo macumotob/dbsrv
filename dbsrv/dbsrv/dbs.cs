@@ -18,9 +18,30 @@ namespace dbsrv
 {
     public class dbs
     {
-        private static string _connString;
+        public const string DB_HOST = "element-prod.cmeu2ebyhpap.eu-central-1.rds.amazonaws.com";//"3.77.85.138";//
+        public const string DB_USER = "element";
+        public const string DB_PASSWORD = "dmfll9exoW7kKZ8lm";//"11PV2myUgiJLJhU-a";
+        public const int DB_PORT = 3306;
 
-        public static void Init(string connectionString)
+        private static string _connString;
+        private static string _GetDBConnection(string host, int port, string database, string username, string password)
+        {
+
+            return "Server=" + host + ";Database=" + database
+                      + ";port=" + port + ";User Id=" + username + ";password=" + password
+                       //+ ";TLS Version=TLS 1.3";
+                       + ";SslMode=none;"
+                       ;
+        }
+        private static string CreateConnectionString(string database)
+        {
+            return _GetDBConnection(DB_HOST, DB_PORT, database, DB_USER, DB_PASSWORD);
+        }
+        public static void Use(string database)
+        {
+            Init(CreateConnectionString(database));
+        }
+        private static void Init(string connectionString)
         {
             _connString = connectionString;
         }
