@@ -195,6 +195,36 @@ namespace dbsrv
                 throw;
             }
         }
+        // Додати до класу dbs:
+
+        // -------------------------------
+        // ExecuteMultipleResultSetsAsync
+        // -------------------------------
+        public static async Task ExecuteMultipleResultSetsAsync(
+            string sql,
+            Func<MySqlDataReader, Task> resultSetHandler,
+            IEnumerable<MySqlParameter>? parameters = null,
+            CommandType commandType = CommandType.Text)
+        {
+            await using var conn = GetConnection();
+            await conn.OpenAsync();
+
+            await using var cmd = new MySqlCommand(sql, conn)
+            {
+                CommandType = commandType
+            };
+
+            if (parameters != null)
+                cmd.Parameters.AddRange(parameters.ToArray());
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            do
+            {
+                await resultSetHandler(reader);
+            }
+            while (await reader.NextResultAsync());
+        }
     }
 }
 
