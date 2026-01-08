@@ -246,6 +246,37 @@ namespace dbsrv
             }
             while (await reader.NextResultAsync());
         }
+
+        // -------------------------------
+        // Query Stored Procedure: SELECT з процедури
+        // -------------------------------
+        public static async Task<List<T>> QueryProcedureAsync<T>(
+            string procedureName,
+            Func<MySqlDataReader, T> map,
+            IEnumerable<MySqlParameter>? parameters = null)
+        {
+            var result = new List<T>();
+
+            await using var conn = GetConnection();
+            await conn.OpenAsync();
+
+            await using var cmd = new MySqlCommand(procedureName, conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+
+            if (parameters != null)
+                cmd.Parameters.AddRange(parameters.ToArray());
+
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                result.Add(map(reader));
+            }
+
+            return result;
+        }
     }
 }
 
