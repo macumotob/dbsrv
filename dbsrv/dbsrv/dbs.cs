@@ -146,11 +146,32 @@ namespace dbsrv
             if (obj == null || obj is DBNull)
                 return default;
 
-            return (T)Convert.ChangeType(obj, typeof(T));
+            // ✅ ВИПРАВЛЕННЯ: Обробка nullable типів і числових конвертацій
+            var targetType = typeof(T);
+            var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            // Спеціальна обробка для числових типів (MySQL повертає Int64 для агрегатних функцій)
+            if (obj is long longValue && underlyingType == typeof(int))
+            {
+                return (T)(object)(int)longValue;
+            }
+
+            if (obj is ulong ulongValue && underlyingType == typeof(int))
+            {
+                return (T)(object)(int)ulongValue;
+            }
+
+            // Загальна конвертація для інших типів
+            if (underlyingType != obj.GetType())
+            {
+                obj = Convert.ChangeType(obj, underlyingType);
+            }
+
+            return (T)obj;
         }
 
         // -------------------------------
-        // ExecuteReader (низкого уровня)
+        // ExecuteReader (низкого рівня)
         // -------------------------------
         public static async Task ExecuteReaderAsync(
             string sql,
