@@ -1,17 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using MySqlConnector;
-using System;
-using System.Collections.Generic;
+﻿using MySqlConnector;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using MySqlConnector;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
 
 
 namespace dbsrv
@@ -24,14 +12,12 @@ namespace dbsrv
         public const int DB_PORT = 3306;
 
         private static string _connString;
-        private static string _GetDBConnection(string host, int port, string database, string username, string password)
+        private static string _GetDBConnection(string host, int port, string database, string username, string password, int connectTimeout = 60)
         {
-
             return "Server=" + host + ";Database=" + database
                       + ";port=" + port + ";User Id=" + username + ";password=" + password
-                       //+ ";TLS Version=TLS 1.3";
-                       + ";SslMode=none;"
-                       ;
+                      + ";SslMode=Disabled;"
+                      + "Connect Timeout=" + connectTimeout + ";";
         }
         private static string CreateConnectionString(string database)
         {
@@ -40,6 +26,11 @@ namespace dbsrv
         public static void Use(string database)
         {
             Init(CreateConnectionString(database));
+        }
+
+        public static void Use(string database, string host, int port, string username, string password, int connectTimeout = 15)
+        {
+            Init(_GetDBConnection(host, port, database, username, password, connectTimeout));
         }
         private static void Init(string connectionString)
         {
