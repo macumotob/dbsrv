@@ -16,7 +16,7 @@ namespace dbsrv
         {
             return "Server=" + host + ";Database=" + database
                       + ";port=" + port + ";User Id=" + username + ";password=" + password
-                      + ";SslMode=Disabled;"
+                      + ";SslMode=Required;"
                       + "Connect Timeout=" + connectTimeout + ";";
         }
         private static string CreateConnectionString(string database)
